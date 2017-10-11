@@ -10,5 +10,5 @@ sudo apt-get install libsdl2-dev
 ```sh
 ./yuvPlayer <input file>
 ```
-press <q> to exit.
+press q to exit.
 
