@@ -6,13 +6,13 @@
 #include <semaphore.h>
 #include <pthread.h>
 
-#define WIDTH (1280)
-#define HEIGHT (720)
-#define PIC_SIZE (WIDTH * HEIGHT * 2)
-
 int fps = 0;
+extern int yuvWidth;
+extern int yuvHeight;
+extern int yuvSize;
+extern int pixFormat;
+extern char *yuvdata;
 extern int run;
-extern char yuvdata[PIC_SIZE];
 extern sem_t picNum;
 extern int read_frame(void);
 
@@ -52,7 +52,7 @@ void *thread_show(void *arg) {
   }
 
   window = SDL_CreateWindow("YUV speed test", SDL_WINDOWPOS_UNDEFINED,
-                            SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT,
+                            SDL_WINDOWPOS_UNDEFINED, yuvWidth, yuvHeight,
                             SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
   if (!window) {
     fprintf(stderr, "Couldn't set create window: %s\n", SDL_GetError());
@@ -67,7 +67,7 @@ void *thread_show(void *arg) {
   SDL_GetRendererInfo(renderer, &info);
   printf("Using %s rendering\n", info.name);
 
-  texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_YUY2, SDL_TEXTUREACCESS_STREAMING, WIDTH, HEIGHT);
+  texture = SDL_CreateTexture(renderer, pixFormat, SDL_TEXTUREACCESS_STREAMING, yuvWidth, yuvHeight);
   if (!texture) {
     fprintf(stderr, "Couldn't set create texture: %s\n", SDL_GetError());
     return (void*)7;
@@ -87,7 +87,7 @@ void *thread_show(void *arg) {
       fps = 0;
       SDL_SetWindowTitle(window, title);
     }
-    SDL_UpdateTexture(texture, NULL, yuvdata, WIDTH * 2);
+    SDL_UpdateTexture(texture, NULL, yuvdata, yuvWidth * 2);
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);
